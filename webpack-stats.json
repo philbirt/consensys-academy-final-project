@@ -1,1 +1,1 @@
-{"status":"error","error":"ModuleBuildError","message":"Module build failed: Error: ENOENT: no such file or directory, open '/home/phillip/Projects/consensys-academy-final-project/index.js'","publicPath":"/"}
+{"status":"error","error":"ModuleBuildError","message":"Module build failed: Error: ENOENT: no such file or directory, open '/home/phillip/Projects/consensys-academy-final-project/node_modules/webpack/buildin/global.js'","publicPath":"/"}

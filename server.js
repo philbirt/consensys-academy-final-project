@@ -12,7 +12,7 @@ app.use(bodyParser.json());
 app.use(express.json());
 
 import IPFS from 'ipfs-api';
-import { buildJson } from './src/utils/buildJson';
+import { buildJson } from './src/utils';
 
 const web3 = new Web3(new Web3.providers.HttpProvider("https://localhost:9594"));
 

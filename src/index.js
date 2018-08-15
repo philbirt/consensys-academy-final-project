@@ -1,8 +1,12 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
-import App from './App'
+import 'babel-polyfill';
+import React, { Component } from 'react';
 
-ReactDOM.render(
-  <App />,
-  document.getElementById('root')
-);
+class Index extends Component {
+  render() {
+    return (
+      <div>what up</div>
+    );
+  }
+}
+
+export default Index;
