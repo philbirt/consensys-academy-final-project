@@ -1,8 +1,7 @@
-import 'babel-polyfill';
 import React, { Component } from 'react';
-import ReactDOMServer from 'react-dom/server';
 import styled, { css } from 'react-emotion';
 
+import Button from './button';
 import Transaction from './transaction';
 import Spinner from '../svg/spinner';
 import PencilIcon from '../svg/pencil-icon';
@@ -108,24 +107,6 @@ const PriceInput = styled.input`
   text-align: center;
 `;
 
-const Button = styled.button`
-  width: 180px;
-  height: 34px;
-  border-radius: 5px;
-  background-color: #424a55;
-  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.5);
-  border: 0;
-  cursor: pointer;
-
-  font-size: 16px;
-  font-weight: 800;
-  line-height: 1.31;
-  letter-spacing: 0.9px;
-  text-align: center;
-  color: #ffffff;
-  margin: 20px 0px;
-`;
-
 class Benefit extends Component {
   constructor(props) {
     super(props);
@@ -192,7 +173,7 @@ class Benefit extends Component {
         </Inputs>
         <BeneficiaryName>to {this.props.name}</BeneficiaryName>
         <BeneficiaryAddress>{this.props.address}</BeneficiaryAddress>
-        { this.props.account && <Button onClick={this.handleSubmit}>Submit</Button> }
+        { this.props.account && <Button handleClick={this.handleSubmit} text='Mint me' /> }
       </Wrapper>
     );
   }

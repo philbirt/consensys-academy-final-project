@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import ReactDOMServer from 'react-dom/server';
 import styled, { css } from 'react-emotion';
 
+import Button from './button';
 import Spinner from '../svg/spinner';
 import PencilIcon from '../svg/pencil-icon';
 import EtherIcon from '../svg/ether-icon';
@@ -39,7 +40,7 @@ const StepsWrapper = styled.div`
   font-weight: bold;
   line-height: 1.67;
   color: #000000;
-  padding-bottom: 50px;
+  padding-bottom: 45px;
 `;
 
 const Step = styled.div`
@@ -158,6 +159,7 @@ class Transaction extends Component {
             Transaction completed
           </Step>
         </StepsWrapper>
+        <Button handleClick={this.handleSubmit} text='Show me the mint!' disabled={!transactionCompleted}/> 
       </Overlay>
     );
   }
