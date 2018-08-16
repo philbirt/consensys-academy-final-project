@@ -1,6 +1,6 @@
 # ERC721 Minter with beneficiary
 
-This project will allow a user to choose from a set of characters, give them a name, and have an amount they specify be donated to the artist.
+This project will allow a user to choose from a set of characters, give them a name, and have an amount they specify be donated to the beneficiary.
 
 A central service (node/express) will take the user's input, create a json payload of the metadata, and upload it to IPFS. Once that file has been uploaded, the dApp will pass this IPFS uri to the smart contract to be stored on an ERC721 token. Along with uri to the metadata, the user will pass a payment along to the smart contract to be transferred to the beneficiary.
 
