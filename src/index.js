@@ -40,7 +40,7 @@ const Description = styled.div`
 const Subheader = styled.div`
   width: 100%;
   padding: 30px 0px;
-  background-color: #66d8c1;
+  background-color: ${props => (props.error ? '#e9573f' : '#66d8c1')};
 
   display: flex;
   align-items: center;
@@ -154,7 +154,7 @@ class Index extends Component {
       );
     } else {
       return (
-        <Subheader>
+        <Subheader error>
           <WaveIcon width={50} height={50} className={css`margin: 0px 30px;`} />
           <SubheaderDescription>
             Hello! Please sign in to MetaMask
