@@ -6,9 +6,7 @@ import { getIpfsImage } from '../api';
 
 const Wrapper = styled.div`
   display: flex;
-  align-items: center;
-
-  min-width: 180px;
+  min-width: 200px;
   border-radius: 5px;
   background-color: #ffffff;
   box-shadow: 2px 4px 8px 0 rgba(0, 0, 0, 0.3);

@@ -22,14 +22,19 @@ const Wrapper = styled.div`
   font-family: Muli;
 `;
 
-const Header = styled.div`
+const HeaderWrapper = styled.div`
   width: 100%;
   background-color: #00bf99;
   padding: 30px 0px;
+  display: flex;
+  justify-content: center;
+`;
 
+const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  max-width: 900px;
 `;
 
 const Description = styled.div`
@@ -54,7 +59,7 @@ const Subheader = styled.div`
 `;
 
 const SubheaderDescription = styled.div`
-  width: 860px;
+  width: calc(100% - 120px);
   font-size: 36px;
   font-weight: bold;
   color: #ffffff;
@@ -80,8 +85,16 @@ const Separator = styled.div`
   margin: 15px 0px;
 `;
 
+const SmileWrapper = styled.div`
+  width: 120px;
+`;
+
 const Collectibles = styled.div`
+  width: 100%;
   display: flex;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  ::-webkit-scrollbar { display: none; }
 `;
 
 @inject('store')
@@ -148,20 +161,27 @@ class Index extends Component {
     });
   }
 
+  scroll(e) {
+    console.log(e.deltaY);
+    window.scrollBy(e.deltaY, 0);
+  }
+
   renderSubheader() {
     const { account, collectibleData } = this.web3Store;
 
     if (account) {
       return (
         <Subheader>
-          <SmileyIcon width={50} height={50} className={css`margin: 0px 30px;`} />
+          <SmileWrapper>
+            <SmileyIcon width={50} height={50} className={css`margin: 0px 30px;`} />
+          </SmileWrapper>
           <SubheaderDescription>
             <HelloAccount>Hello {account}</HelloAccount>
             { collectibleData.length === 0 &&
               <HelloItems>Why don't you try minting a mint above?</HelloItems>
             }
             { collectibleData.length > 0 &&
-              <Collectibles>{this.renderCollectibles()}</Collectibles>
+              <Collectibles onWheel={this.scroll}>{this.renderCollectibles()}</Collectibles>
             }
           </SubheaderDescription>
         </Subheader>
@@ -195,16 +215,18 @@ class Index extends Component {
   render() {
     return (
       <Wrapper>
-        <Header>
-          <Benemint width={210} height={40} className={css`margin: 0px 20px;`} />
-          <Description>
-            This dApp will allow a user to choose from a set of mints,
-            give them a name, and specify an amount to be donated to their favorite mint company.
-            <Separator />
-            Upon completion an ERC721 token representing their mint will be minted,
-            forever signifying their love and support for mints.
-          </Description>
-        </Header>
+        <HeaderWrapper>
+          <Header>
+            <Benemint width={210} height={40} className={css`margin: 0px 20px;`} />
+            <Description>
+              This dApp will allow a user to choose from a set of mints,
+              give them a name, and specify an amount to be donated to their favorite mint company.
+              <Separator />
+              Upon completion an ERC721 token representing their mint will be minted,
+              forever signifying their love and support for mints.
+            </Description>
+          </Header>
+        </HeaderWrapper>
         { this.renderSubheader() }
         <Benefits>
           { this.renderBenefits() }
