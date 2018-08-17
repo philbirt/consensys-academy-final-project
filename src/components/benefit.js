@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import styled, { css } from 'react-emotion';
+import { observer, inject } from 'mobx-react';
 
 import Button from './button';
 import Transaction from './transaction';
@@ -107,9 +108,14 @@ const PriceInput = styled.input`
   text-align: center;
 `;
 
+@inject('store')
+@observer
 class Benefit extends Component {
   constructor(props) {
     super(props);
+
+    this.transactionStore = props.store.transactionStore;
+    this.web3Store = props.store.web3Store;
 
     this.state = {
       name: '',
@@ -132,18 +138,23 @@ class Benefit extends Component {
   }
 
   handleSubmit = (e) => {
-    const { contract, web3, account, id } = this.props;
-    this.setState({ submitted: true, creatingAvatar: true });
+    const { name, price } = this.state;
+    const { contract, web3, account } = this.web3Store;
+    const { id } = this.props;
+
+    this.setState({ submitted: true });
+    this.transactionStore.updateCreatingAvatar();
 
     mintApi(
-      this.props.account,
-      this.props.id,
-      this.state.name,
-      this.state.price
+      account,
+      id,
+      name,
+      price
     ).then((response) => {
       const { ipfsUri, nonce, v, r, s } = response.data;
-      console.log(response.data);
-      this.setState({ creatingAvatar: false, avatarCreated: true, sendingToBlockchain: true });
+
+      this.transactionStore.updateAvatarCreated();
+      this.transactionStore.updateSendingToBlockhain();
 
       contract.methods.mintTo(
         account,
@@ -153,37 +164,26 @@ class Benefit extends Component {
         v, r, s
       ).send({
         from: account,
-        value: web3.utils.toWei(this.state.price, 'ether')
+        value: web3.utils.toWei(price, 'ether')
       }).on('transactionHash', (transactionHash) => {
-        this.setState({ sendingToBlockchain: false, sentToBlockchain: true, transactionInProgress: true });
-        // this.props.web3.eth.getTransactionReceipt(transactionHash).then((txReceipt) => {
-        // });
+        this.transactionStore.updateSentToBlockchain();
+        this.transactionStore.updateTransactionInProgress();
       }).on('confirmation', (confirmationNumber, receipt) => {
-        console.log(`Block confirmations: ${confirmationNumber}`);
-
-        if (confirmationNumber > 6) {
-          this.setState({ transactionInProgress: false, transactionCompleted: true });
+        if (this.transactionStore.inProgress && confirmationNumber === 6) {
+          this.transactionStore.updateTransactionCompleted();
         }
       });
     });
   }
 
   onTransactionComplete = () => {
-    this.setState({
-      name: '',
-      price: '',
-      submitted: false,
-      creatingAvatar: false,
-      avatarCreated: false,
-      sendingToBlockchain: false,
-      sentToBlockchain: false,
-      transactionInProgress: false,
-      transactionCompleted: false,
-    });
+    this.setState({ submitted: false, name: '', price: '' });
+    this.transactionStore.clearTransactionState();
+    this.web3Store.updateCollectibles();
   }
 
   buttonDisabled() {
-    return !(this.state.price && this.state.name);
+    return !(this.state.price && this.state.name) || this.transactionStore.inProgress;
   }
 
   async fetchImage() {
@@ -193,35 +193,29 @@ class Benefit extends Component {
   }
 
   render() {
+    const { submitted, loadedImage, name, price } = this.state;
+    const { account } = this.web3Store;
+
     return (
       <Wrapper>
         {
-          this.state.submitted &&
-          <Transaction
-            creatingAvatar
-            onComplete={this.onTransactionComplete}
-            creatingAvatar={this.state.creatingAvatar}
-            avatarCreated={this.state.avatarCreated}
-            sendingToBlockchain={this.state.sendingToBlockchain}
-            sentToBlockchain={this.sendingToBlockchain}
-            transactionInProgress={this.transactionInProgress}
-            transactionCompleted={this.transactionCompleted}
-          />
+          submitted &&
+          <Transaction onComplete={this.onTransactionComplete} />
         }
-        <BenefitImage dangerouslySetInnerHTML={{ __html: this.state.loadedImage }} />
+        <BenefitImage dangerouslySetInnerHTML={{ __html: loadedImage }} />
         <Inputs>
           <NameInputWrapper>
             <PencilIcon width={20} height={20} className={css`margin: 0px 8px 0px 0px;`} />
             <NameInput
               placeholder="Your new mint's name"
               maxLength={20}
-              value={this.state.name}
+              value={name}
               onChange={this.updateName}
             />
           </NameInputWrapper>
           <PriceInput
             placeholder='0 ETH'
-            value={this.state.price}
+            value={price}
             onChange={this.updatePrice}
             min='0'
             step='0.001'
@@ -232,7 +226,7 @@ class Benefit extends Component {
         </Inputs>
         <BeneficiaryName>to {this.props.name}</BeneficiaryName>
         <BeneficiaryAddress>{this.props.address}</BeneficiaryAddress>
-        { this.props.account && <Button handleClick={this.handleSubmit} text='Mint me' disabled={this.buttonDisabled()} /> }
+        { account && <Button handleClick={this.handleSubmit} text='Mint me' disabled={this.buttonDisabled()} /> }
       </Wrapper>
     );
   }

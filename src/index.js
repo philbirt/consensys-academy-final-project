@@ -3,6 +3,7 @@ import MinterContract from '../build/contracts/Minter.json';
 
 import React, { Component } from 'react';
 import styled, { css } from 'react-emotion';
+import { observer, inject } from 'mobx-react';
 
 import getWeb3 from './web3';
 import { getBeneficiaries, ipfsUriToUrl, getIpfsImage } from './api';
@@ -83,14 +84,15 @@ const Collectibles = styled.div`
   display: flex;
 `;
 
+@inject('store')
+@observer
 class Index extends Component {
   constructor(props) {
     super(props);
 
+    this.web3Store = this.props.store.web3Store;
+
     this.state = {
-      web3: null,
-      account: null,
-      contract: null,
       beneficiaries: [],
       collectibleData: [],
     }
@@ -98,12 +100,10 @@ class Index extends Component {
 
   componentWillMount() {
     getWeb3.then(results => {
-      this.setState({
-        web3: results.web3
-      })
+      this.web3Store.updateWeb3(results.web3);
 
-      this.instantiateAccount();
       this.instantiateContract();
+      this.instantiateAccount();
       this.fetchBeneficiaries();
     })
     .catch((e) => {
@@ -118,40 +118,25 @@ class Index extends Component {
     });
   }
 
-  fetchAccountCollectibles() {
-    const { contract, account, collectibleData } = this.state;
-
-    contract.methods.tokensOf(account).call().then((response) => {
-      response.map(tokenId => {
-        contract.methods.tokenByUri(tokenId).call().then((response) => {
-          getIpfsImage(ipfsUriToUrl(response)).then((response) => {
-            collectibleData.push(response.data);
-            this.setState({ collectibleData });
-          });
-        });
-      });
-    })
-  }
-
   async instantiateContract() {
-    let contract = new this.state.web3.eth.Contract(
+    let contract = new this.web3Store.web3.eth.Contract(
       MinterContract.abi,
       MinterContract.networks['4447'].address,
       { from: this.state.account }
     );
 
-    this.setState({ contract });
+    this.web3Store.updateContract(contract);
   }
 
   instantiateAccount() {
-    this.state.web3.eth.getAccounts((error, accounts) => {
-      this.setState({ account: accounts[0] });
-      this.fetchAccountCollectibles();
+    this.web3Store.web3.eth.getAccounts((error, accounts) => {
+      this.web3Store.updateAccount(accounts[0])
+      this.web3Store.updateCollectibles();
     });
   }
 
   renderCollectibles() {
-    return this.state.collectibleData.map((collectible, index) => {
+    return this.web3Store.collectibleData.map((collectible, index) => {
       return (
         <Collectible
           key={index}
@@ -164,16 +149,18 @@ class Index extends Component {
   }
 
   renderSubheader() {
-    if (this.state.account) {
+    const { account, collectibleData } = this.web3Store;
+
+    if (account) {
       return (
         <Subheader>
           <SmileyIcon width={50} height={50} className={css`margin: 0px 30px;`} />
           <SubheaderDescription>
-            <HelloAccount>Hello {this.state.account}</HelloAccount>
-            { this.state.collectibleData.length === 0 &&
+            <HelloAccount>Hello {account}</HelloAccount>
+            { collectibleData.length === 0 &&
               <HelloItems>Why don't you try minting a mint above?</HelloItems>
             }
-            { this.state.collectibleData.length > 0 &&
+            { collectibleData.length > 0 &&
               <Collectibles>{this.renderCollectibles()}</Collectibles>
             }
           </SubheaderDescription>
@@ -200,9 +187,6 @@ class Index extends Component {
           name={benefit.name}
           address={benefit.address}
           image={benefit.image}
-          web3={this.state.web3}
-          contract={this.state.contract}
-          account={this.state.account}
         />
       );
     });

@@ -1,7 +1,7 @@
 import 'babel-polyfill';
 import React, { Component } from 'react';
-import ReactDOMServer from 'react-dom/server';
 import styled, { css } from 'react-emotion';
+import { observer, inject } from 'mobx-react';
 
 import Button from './button';
 import Spinner from '../svg/spinner';
@@ -69,20 +69,16 @@ const TransactionHeader = styled.div`
   text-align: center;
 `;
 
+@inject('store')
+@observer
 class Transaction extends Component {
-  adoptionInProgress() {
-    let { transactionInProgress, transactionCompleted, creatingAvatar, avatarCreated, sendingToBlockchain, sentToBlockchain } = this.props;
-    return creatingAvatar || sendingToBlockchain || transactionInProgress || transactionCompleted;
+  constructor(props) {
+    super(props);
+    this.transactionStore = props.store.transactionStore;
   }
 
   render() {
-    let { transactionInProgress, transactionCompleted, creatingAvatar, avatarCreated, sendingToBlockchain, sentToBlockchain } = this.props;
-
-    console.log('blockchain');
-    console.log(sendingToBlockchain, sentToBlockchain);
-
-    console.log('transaction');
-    console.log(transactionInProgress, transactionCompleted);
+    let { transactionInProgress, transactionCompleted, creatingAvatar, avatarCreated, sendingToBlockchain, sentToBlockchain } = this.transactionStore;
 
     return (
       <Overlay>
@@ -139,7 +135,7 @@ class Transaction extends Component {
             Transaction completed
           </Step>
         </StepsWrapper>
-        <Button handleClick={this.props.onTransactionComplete} text='Show me the mint!' disabled={!transactionCompleted}/> 
+        <Button handleClick={this.props.onComplete} text='Show me the mint!' disabled={!transactionCompleted}/> 
       </Overlay>
     );
   }
