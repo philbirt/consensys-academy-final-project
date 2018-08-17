@@ -41,7 +41,6 @@ app.post('/mint', function(req, res) {
       { t: 'string', v: ipfsUri },
       { t: 'uint8', v: beneficiaryId },
       { t: 'uint256', v: nonce },
-      { t: 'uint256', v: price }
     );
 
     const sig = account.sign(sha);

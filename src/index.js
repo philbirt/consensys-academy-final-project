@@ -1,4 +1,6 @@
 import 'babel-polyfill';
+import MinterContract from '../build/contracts/Minter.json';
+
 import React, { Component } from 'react';
 import styled, { css } from 'react-emotion';
 
@@ -81,9 +83,9 @@ class Index extends Component {
     super(props);
 
     this.state = {
-      storageValue: 0,
       web3: null,
       account: null,
+      contract: null,
       beneficiaries: [],
     }
   }
@@ -95,6 +97,7 @@ class Index extends Component {
       })
 
       this.instantiateAccount();
+      this.instantiateContract();
       this.fetchBeneficiaries();      
     })
     .catch((e) => {
@@ -107,6 +110,22 @@ class Index extends Component {
     getBeneficiaries().then((response) => {
       this.setState({beneficiaries: response.data });
     });
+  }
+
+  async instantiateContract() {
+    console.log(MinterContract.networks['4447'].address);
+
+    let contract = new this.state.web3.eth.Contract(
+      MinterContract.abi,
+      MinterContract.networks['4447'].address,
+      { from: this.state.account }
+    );
+
+    // contract.methods.minterAddress().call().then((response) => {
+    //   console.log(response);
+    // });
+
+    this.setState({ contract });
   }
 
   instantiateAccount() {
@@ -148,7 +167,7 @@ class Index extends Component {
           address={benefit.address}
           image={benefit.image}
           web3={this.state.web3}
-          minterContract={this.state.minterContract}
+          contract={this.state.contract}
           account={this.state.account}
         />
       );

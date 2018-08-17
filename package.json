@@ -60,8 +60,8 @@
     "react-emotion": "^9.0.2",
     "react-router": "^4.2.0",
     "react-router-dom": "^4.2.2",
+    "truffle": "^4.1.14",
     "truffle-assertions": "^0.3.1",
-    "truffle-contract": "^3.0.6",
     "web3": "^1.0.0-beta.35",
     "web3-utils": "^1.0.0-beta.35"
   },

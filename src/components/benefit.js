@@ -1,6 +1,3 @@
-const contract = require('truffle-contract');
-import MinterContract from '../../build/contracts/Minter.json';
-
 import React, { Component } from 'react';
 import styled, { css } from 'react-emotion';
 
@@ -135,6 +132,7 @@ class Benefit extends Component {
   }
 
   handleSubmit = async (e) => {
+    const { contract, web3, account, id } = this.props;
     this.setState({ submitted: true, creatingAvatar: true });
 
     mintApi(
@@ -144,21 +142,22 @@ class Benefit extends Component {
       this.state.price
     ).then((response) => {
       const { ipfsUri, nonce, v, r, s } = response.data;
+      console.log(response.data);
       this.setState({ creatingAvatar: false, avatarCreated: true, sendingToBlockchain: true });
 
-      const minterContract = contract(MinterContract);
-      minterContract.setProvider(this.props.web3.currentProvider);
-
-      minterContract.deployed().then((minterInstance) => {
-        // console.log(this.props.account, this.props.id, ipfsUri, nonce,v,r,s);
-        minterInstance.mintTo(
-          this.props.account, this.props.id, ipfsUri, nonce, v, r, s,
-          { from: this.props.account, value: this.props.web3.utils.toWei(this.state.price, 'ether') }
-        ).then('transactionHash', (transactionHash) => {
-          this.props.web3.eth.getTransactionReceipt(transactionHash).then((txReceipt) => {
-            console.log("LOGS");
-            console.log(txReceipt['logs'][0]['data']);
-          });
+      contract.methods.mintTo(
+        account,
+        id,
+        ipfsUri,
+        nonce,
+        v, r, s
+      ).send({
+        from: account,
+        value: web3.utils.toWei(this.state.price, 'ether')
+      }).on('transactionHash', (transactionHash) => {
+        this.props.web3.eth.getTransactionReceipt(transactionHash).then((txReceipt) => {
+          console.log("LOGS");
+          console.log(txReceipt['logs'][0]['data']);
         });
       });
     });

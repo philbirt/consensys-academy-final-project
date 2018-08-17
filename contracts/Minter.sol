@@ -67,7 +67,7 @@ contract Minter is ERC721Token, Ownable, Pausable {
     require(!usedNonces[_nonce]);
     require(beneficiaries[_beneficiaryId].addr > 0);
     require(beneficiaries[_beneficiaryId].isActive);
-    require(verifyMessage(keccak256(abi.encodePacked(_to, _tokenURI, _beneficiaryId, _nonce, msg.value)), v, r, s));
+    require(verifyMessage(keccak256(abi.encodePacked(_to, _tokenURI, _beneficiaryId, _nonce)), v, r, s));
     usedNonces[_nonce] = true;
 
     uint256 newTokenId = mintToken(_to, _tokenURI);
