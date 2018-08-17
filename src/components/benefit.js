@@ -131,7 +131,7 @@ class Benefit extends Component {
     this.setState({ price: e.target.value });
   }
 
-  handleSubmit = async (e) => {
+  handleSubmit = (e) => {
     const { contract, web3, account, id } = this.props;
     this.setState({ submitted: true, creatingAvatar: true });
 
@@ -155,10 +155,15 @@ class Benefit extends Component {
         from: account,
         value: web3.utils.toWei(this.state.price, 'ether')
       }).on('transactionHash', (transactionHash) => {
-        this.props.web3.eth.getTransactionReceipt(transactionHash).then((txReceipt) => {
-          console.log("LOGS");
-          console.log(txReceipt['logs'][0]['data']);
-        });
+        this.setState({ sendingToBlockchain: false, sentToBlockchain: true, transactionInProgress: true });
+        // this.props.web3.eth.getTransactionReceipt(transactionHash).then((txReceipt) => {
+        // });
+      }).on('confirmation', (confirmationNumber, receipt) => {
+        console.log(`Block confirmations: ${confirmationNumber}`);
+
+        if (confirmationNumber > 6) {
+          this.setState({ transactionInProgress: false, transactionCompleted: true });
+        }
       });
     });
   }

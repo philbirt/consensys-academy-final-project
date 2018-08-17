@@ -5,12 +5,13 @@ import React, { Component } from 'react';
 import styled, { css } from 'react-emotion';
 
 import getWeb3 from './web3';
-import { getBeneficiaries } from './api';
+import { getBeneficiaries, ipfsUriToUrl, getIpfsImage } from './api';
 
 import Benemint from './svg/benemint';
 import WaveIcon from './svg/wave-icon';
 import SmileyIcon from './svg/smiley-icon';
 import Benefit from './components/benefit';
+import Collectible from './components/collectible';
 
 const Wrapper = styled.div`
   display: flex;
@@ -78,6 +79,10 @@ const Separator = styled.div`
   margin: 15px 0px;
 `;
 
+const Collectibles = styled.div`
+  display: flex;
+`;
+
 class Index extends Component {
   constructor(props) {
     super(props);
@@ -87,6 +92,7 @@ class Index extends Component {
       account: null,
       contract: null,
       beneficiaries: [],
+      collectibleData: [],
     }
   }
 
@@ -98,7 +104,7 @@ class Index extends Component {
 
       this.instantiateAccount();
       this.instantiateContract();
-      this.fetchBeneficiaries();      
+      this.fetchBeneficiaries();
     })
     .catch((e) => {
       console.log(e);
@@ -112,18 +118,27 @@ class Index extends Component {
     });
   }
 
-  async instantiateContract() {
-    console.log(MinterContract.networks['4447'].address);
+  fetchAccountCollectibles() {
+    const { contract, account, collectibleData } = this.state;
 
+    contract.methods.tokensOf(account).call().then((response) => {
+      response.map(tokenId => {
+        contract.methods.tokenByUri(tokenId).call().then((response) => {
+          getIpfsImage(ipfsUriToUrl(response)).then((response) => {
+            collectibleData.push(response.data);
+            this.setState({ collectibleData });
+          });
+        });
+      });
+    })
+  }
+
+  async instantiateContract() {
     let contract = new this.state.web3.eth.Contract(
       MinterContract.abi,
       MinterContract.networks['4447'].address,
       { from: this.state.account }
     );
-
-    // contract.methods.minterAddress().call().then((response) => {
-    //   console.log(response);
-    // });
 
     this.setState({ contract });
   }
@@ -131,6 +146,20 @@ class Index extends Component {
   instantiateAccount() {
     this.state.web3.eth.getAccounts((error, accounts) => {
       this.setState({ account: accounts[0] });
+      this.fetchAccountCollectibles();
+    });
+  }
+
+  renderCollectibles() {
+    return this.state.collectibleData.map((collectible, index) => {
+      return (
+        <Collectible
+          key={index}
+          name={collectible.name}
+          price={collectible.price}
+          beneficiary={collectible.beneficiary}
+        />
+      );
     });
   }
 
@@ -141,7 +170,12 @@ class Index extends Component {
           <SmileyIcon width={50} height={50} className={css`margin: 0px 30px;`} />
           <SubheaderDescription>
             <HelloAccount>Hello {this.state.account}</HelloAccount>
-            <HelloItems>Why don't you try minting a mint above?</HelloItems>
+            { this.state.collectibleData.length === 0 &&
+              <HelloItems>Why don't you try minting a mint above?</HelloItems>
+            }
+            { this.state.collectibleData.length > 0 &&
+              <Collectibles>{this.renderCollectibles()}</Collectibles>
+            }
           </SubheaderDescription>
         </Subheader>
       );

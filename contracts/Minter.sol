@@ -120,6 +120,16 @@ contract Minter is ERC721Token, Ownable, Pausable {
     minterAddress = _addr;
   }
 
+
+  function tokensOf(address _owner) external view returns (uint256[] _ownedTokens) {
+    require(_owner != address(0));
+    _ownedTokens = ownedTokens[_owner];
+  }
+
+  function tokenByUri(uint256 _id) external view returns (string _tokenByUri) {
+    return tokenURIs[_id];
+  }
+
   /**
   * @dev Verifies a given hash and ECDSA signature match the minter address
   * @param h to verify

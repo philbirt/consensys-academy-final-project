@@ -18,3 +18,9 @@ export const beneficiaries = [
     "image": "https://ipfs.io/ipfs/QmNkT4vWVPYtJqPGVGwzEnx8C3UbKwm2GXJjByfdLeCLRe"
   },
 ]
+
+export function beneficiaryById(id) {
+  return beneficiaries.filter(beneficiary => {
+    return beneficiary.id === id
+  })[0];
+}

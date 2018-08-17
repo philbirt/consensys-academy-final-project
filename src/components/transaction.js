@@ -78,6 +78,12 @@ class Transaction extends Component {
   render() {
     let { transactionInProgress, transactionCompleted, creatingAvatar, avatarCreated, sendingToBlockchain, sentToBlockchain } = this.props;
 
+    console.log('blockchain');
+    console.log(sendingToBlockchain, sentToBlockchain);
+
+    console.log('transaction');
+    console.log(transactionInProgress, transactionCompleted);
+
     return (
       <Overlay>
         <TransactionHeader>Hold tight!</TransactionHeader>

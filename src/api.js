@@ -33,6 +33,10 @@ export function getBeneficiaries() {
   return get('http://localhost:8180/beneficiaries');
 }
 
+export function ipfsUriToUrl(ipfsUri) {
+  return `https://ipfs.io/ipfs/${ipfsUri}`
+}
+
 export function getIpfsImage(ipfsUrl) {
   return get(ipfsUrl);
 }
