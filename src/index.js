@@ -97,7 +97,7 @@ class Index extends Component {
 
       this.instantiateContract();
       this.instantiateAccount();
-      this.fetchBeneficiaries();
+      this.fetchBeneficiaries();      
     })
     .catch(() => {
       console.log('Error finding web3.');

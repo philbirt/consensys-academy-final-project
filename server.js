@@ -21,7 +21,8 @@ const web3 = new Web3(new Web3.providers.HttpProvider("https://localhost:9594"))
 app.post('/mint', function(req, res) {
   res.setHeader('Content-Type', 'application/json');
 
-  const { toAddress, beneficiaryId, name, price } = req.body;
+  let { toAddress, beneficiaryId, name, price } = req.body;
+  toAddress = web3.utils.toChecksumAddress(toAddress);
 
   const ipfs = new IPFS({ host: 'ipfs.infura.io', port: 5001, protocol: 'https' });
   const bodyJson = Buffer.from(JSON.stringify(buildJson(
@@ -35,7 +36,14 @@ app.post('/mint', function(req, res) {
     let ipfsUri = ipfsObj[0].path;
     const account = web3.eth.accounts.privateKeyToAccount(process.env.PKEY);
     const nonce = generateNonce();
-    const sha = Web3Utils.soliditySha3(toAddress, ipfsUri, beneficiaryId, nonce, price);
+    const sha = Web3Utils.soliditySha3(
+      { t: 'address', v: toAddress },
+      { t: 'string', v: ipfsUri },
+      { t: 'uint8', v: beneficiaryId },
+      { t: 'uint256', v: nonce },
+      { t: 'uint256', v: price }
+    );
+
     const sig = account.sign(sha);
 
     const responseBody = {

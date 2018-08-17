@@ -70,39 +70,13 @@ const TransactionHeader = styled.div`
 `;
 
 class Transaction extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      creatingAvatar: true,
-      avatarCreated: false,
-      sendingToBlockchain: false,
-      sentToBlockchain: false,
-      transactionInProgress: false,
-      transactionCompleted: false,
-    };
-  }
-
   adoptionInProgress() {
-    let { transactionInProgress, transactionCompleted, creatingAvatar, avatarCreated, sendingToBlockchain, sentToBlockchain } = this.state;
+    let { transactionInProgress, transactionCompleted, creatingAvatar, avatarCreated, sendingToBlockchain, sentToBlockchain } = this.props;
     return creatingAvatar || sendingToBlockchain || transactionInProgress || transactionCompleted;
   }
 
-  clearTransaction = (e) => {
-    this.setState({
-      name: '',
-      price: '',
-      creatingAvatar: false,
-      avatarCreated: false,
-      sendingToBlockchain: false,
-      sentToBlockchain: false,
-      transactionInProgress: false,
-      transactionCompleted: false,
-    });
-  }
-
   render() {
-    let { transactionInProgress, transactionCompleted, creatingAvatar, avatarCreated, sendingToBlockchain, sentToBlockchain } = this.state;
+    let { transactionInProgress, transactionCompleted, creatingAvatar, avatarCreated, sendingToBlockchain, sentToBlockchain } = this.props;
 
     return (
       <Overlay>
@@ -159,7 +133,7 @@ class Transaction extends Component {
             Transaction completed
           </Step>
         </StepsWrapper>
-        <Button handleClick={this.handleSubmit} text='Show me the mint!' disabled={!transactionCompleted}/> 
+        <Button handleClick={this.props.onTransactionComplete} text='Show me the mint!' disabled={!transactionCompleted}/> 
       </Overlay>
     );
   }

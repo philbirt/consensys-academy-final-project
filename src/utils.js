@@ -13,5 +13,5 @@ export function buildJson(toAddress, beneficiaryId, name, price) {
 }
 
 export function generateNonce() {
-  parseInt(Math.random()*100000000000);
+  return parseInt(Math.random()*100000000000);
 }

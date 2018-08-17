@@ -10,7 +10,7 @@ import CheckmarkCircleIcon from '../svg/checkmark-circle-icon';
 import CheckmarkBlueIcon from '../svg/checkmark-blue-icon';
 import LoaderDots from '../svg/loader-dots';
 
-import { getIpfsImage } from '../api';
+import { mintApi, getIpfsImage } from '../api';
 
 const Wrapper = styled.div`
   position: relative;
@@ -72,6 +72,7 @@ const BeneficiaryAddress = styled.div`
 const NameInputWrapper = styled.div`
   display: flex;
   justify-content: space-between;
+  margin-top: 10px;
 `;
 
 const NameInput = styled.input`
@@ -80,7 +81,6 @@ const NameInput = styled.input`
   font-size: 14px;
   font-weight: bold;
   line-height: 2.86;
-  text-align: center;
 
   border: 0;
   border-bottom: 1px solid #ccc;
@@ -103,7 +103,7 @@ const PriceInput = styled.input`
   border-radius: 5px;
   border-width: 0px;
   background-color: #eee;
-  margin-top: 20px;
+  margin-top: 10px;
   text-align: center;
 `;
 
@@ -132,11 +132,36 @@ class Benefit extends Component {
   }
 
   handleSubmit = (e) => {
-    this.setState({ transactionInProgress: true });
+    this.setState({ submitted: true, creatingAvatar: true });
+
+    mintApi(
+      this.props.account,
+      this.props.id,
+      this.state.name,
+      this.state.price
+    ).then((response) => {
+      const { token_uri, v, r, s } = response.data;
+      this.setState({ creatingAvatar: false, avatarCreated: true, sendingToBlockchain: true })
+      console.log(response.data);
+    });
   }
 
   onTransactionComplete = () => {
-    this.setState({ transactionInProgress: false });
+    this.setState({
+      name: '',
+      price: '',
+      submitted: false,
+      creatingAvatar: false,
+      avatarCreated: false,
+      sendingToBlockchain: false,
+      sentToBlockchain: false,
+      transactionInProgress: false,
+      transactionCompleted: false,
+    });
+  }
+
+  buttonDisabled() {
+    return !(this.state.price && this.state.name);
   }
 
   async fetchImage() {
@@ -148,11 +173,23 @@ class Benefit extends Component {
   render() {
     return (
       <Wrapper>
-        { this.state.transactionInProgress && <Transaction onComplete={this.onTransactionComplete} /> }
+        {
+          this.state.submitted &&
+          <Transaction
+            creatingAvatar
+            onComplete={this.onTransactionComplete}
+            creatingAvatar={this.state.creatingAvatar}
+            avatarCreated={this.state.avatarCreated}
+            sendingToBlockchain={this.state.sendingToBlockchain}
+            sentToBlockchain={this.sendingToBlockchain}
+            transactionInProgress={this.transactionInProgress}
+            transactionCompleted={this.transactionCompleted}
+          />
+        }
         <BenefitImage dangerouslySetInnerHTML={{ __html: this.state.loadedImage }} />
         <Inputs>
           <NameInputWrapper>
-            <PencilIcon width={20} height={20} className={css`margin: 0px 5px 0px 0px;`} />
+            <PencilIcon width={20} height={20} className={css`margin: 0px 8px 0px 0px;`} />
             <NameInput
               placeholder="Your new mint's name"
               maxLength={20}
@@ -173,7 +210,7 @@ class Benefit extends Component {
         </Inputs>
         <BeneficiaryName>to {this.props.name}</BeneficiaryName>
         <BeneficiaryAddress>{this.props.address}</BeneficiaryAddress>
-        { this.props.account && <Button handleClick={this.handleSubmit} text='Mint me' /> }
+        { this.props.account && <Button handleClick={this.handleSubmit} text='Mint me' disabled={this.buttonDisabled()} /> }
       </Wrapper>
     );
   }

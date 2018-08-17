@@ -36,3 +36,15 @@ export function getBeneficiaries() {
 export function getIpfsImage(ipfsUrl) {
   return get(ipfsUrl);
 }
+
+export function mintApi(toAddress, beneficiaryId, name, price) {
+  return post(
+    'http://localhost:8180/mint',
+    {
+      toAddress,
+      beneficiaryId,
+      name,
+      price,
+    }
+  )
+}
