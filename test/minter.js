@@ -225,7 +225,7 @@ contract('Minter', (accounts) => {
     });
 
     it('adds a new beneficiary and emits event', async function() {
-      const beneficiaryId = 3;
+      const beneficiaryId = 4;
 
       await this.contract.addBeneficiary(beneficiaryId, this.beneficiaryAddress).then(async (result) => {
         let retrievedBeneficiary = await this.contract.beneficiaries.call(beneficiaryId);
