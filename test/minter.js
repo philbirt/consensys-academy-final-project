@@ -25,6 +25,7 @@ async function generateSignature(toAddress, tokenUri, beneficiaryId, nonce, msgV
     { t: 'string', v: tokenUri},
     { t: 'uint8', v: beneficiaryId },
     { t: 'uint256', v: nonce },
+    { t: 'uint256', v: msgValue },
   );
   const signature = await web3.eth.sign(hash, minterAddress);
   return splitSignature(web3, signature);
