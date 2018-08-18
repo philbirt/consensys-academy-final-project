@@ -50,6 +50,9 @@ const Subheader = styled.div`
   padding: 30px 0px;
   background-color: ${props => (props.error ? '#e9573f' : '#66d8c1')};
 
+  max-height: ${props => (props.hasItems ? '400px' : '110px')};
+  transition: all .3s ease-in-out;
+
   display: flex;
   align-items: center;
 
@@ -91,6 +94,7 @@ const SmileWrapper = styled.div`
 
 const Collectibles = styled.div`
   width: 100%;
+  height: 125px;
   display: flex;
   overflow-x: scroll;
   overflow-y: hidden;
@@ -104,6 +108,7 @@ class Index extends Component {
     super(props);
 
     this.web3Store = this.props.store.web3Store;
+    this.userStore = this.props.store.userStore;
 
     this.state = {
       beneficiaries: [],
@@ -144,12 +149,12 @@ class Index extends Component {
   instantiateAccount() {
     this.web3Store.web3.eth.getAccounts((error, accounts) => {
       this.web3Store.updateAccount(accounts[0])
-      this.web3Store.updateCollectibles();
+      this.userStore.updateCollectibleData();
     });
   }
 
   renderCollectibles() {
-    return this.web3Store.collectibleData.map((collectible, index) => {
+    return this.userStore.collectibleData.map((collectible, index) => {
       return (
         <Collectible
           key={index}
@@ -167,11 +172,12 @@ class Index extends Component {
   }
 
   renderSubheader() {
-    const { account, collectibleData } = this.web3Store;
+    const { account } = this.web3Store;
+    const { collectibleData } = this.userStore;
 
     if (account) {
       return (
-        <Subheader>
+        <Subheader hasItems={collectibleData.length > 0}>
           <SmileWrapper>
             <SmileyIcon width={50} height={50} className={css`margin: 0px 30px;`} />
           </SmileWrapper>

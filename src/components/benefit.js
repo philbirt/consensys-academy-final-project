@@ -116,6 +116,7 @@ class Benefit extends Component {
 
     this.transactionStore = props.store.transactionStore;
     this.web3Store = props.store.web3Store;
+    this.userStore = props.store.userStore;
 
     this.state = {
       name: '',
@@ -179,7 +180,7 @@ class Benefit extends Component {
   onTransactionComplete = () => {
     this.setState({ submitted: false, name: '', price: '' });
     this.transactionStore.clearTransactionState();
-    this.web3Store.updateCollectibles();
+    this.userStore.updateCollectibleData();
   }
 
   buttonDisabled() {
