@@ -120,13 +120,21 @@ contract Minter is ERC721Token, Ownable, Pausable {
     minterAddress = _addr;
   }
 
-
-  function tokensOf(address _owner) external view returns (uint256[] _ownedTokens) {
-    require(_owner != address(0));
-    _ownedTokens = ownedTokens[_owner];
+  /**
+  * @dev Returns the token IDs of the address
+  * @param _addr the address to retrieve tokens for
+  */
+  function tokensOf(address _addr) external view returns (uint256[]) {
+    require(_addr > 0);
+    return ownedTokens[_addr];
   }
 
-  function tokenByUri(uint256 _id) external view returns (string _tokenByUri) {
+  /**
+  * @dev Returns the token URI given a token ID
+  * @param _id the id of the token
+  */
+  function tokenUriById(uint256 _id) external view returns (string) {
+    require(_id > 0);
     return tokenURIs[_id];
   }
 

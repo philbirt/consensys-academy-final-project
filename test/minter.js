@@ -415,4 +415,64 @@ contract('Minter', (accounts) => {
       ).should.be.rejectedWith('revert');
     });
   });
+
+  describe('tokensOf', () => {
+    beforeEach(async function () {
+      this.toAddress = accounts[6];
+      this.beneficiaryId = 1;
+      this.tokenUri = 'QmZ8T3ZEr8UDgBpD9yXMcYASmgoZr9jytmozCNMdA3afWM';
+      this.msgValue = 100000;
+      this.transactionMsg = { from: this.toAddress, value: this.msgValue };
+    });
+
+    it('returns the tokens for a specified address', async function() {
+      const nonce = 20;
+      const { v, r, s } = await generateSignature(
+        this.toAddress, this.tokenUri, this.beneficiaryId, nonce, this.msgValue, this.minterAddress
+      );
+
+      await this.contract.mintTo(
+        this.toAddress, this.beneficiaryId, this.tokenUri, nonce, v, r, s, this.transactionMsg
+      ).then(async (result) => {
+        let tokenId = await this.contract.tokenOfOwnerByIndex(this.toAddress, 0);
+        let tokenIds = await this.contract.tokensOf(this.toAddress);
+
+        tokenIds = tokenIds.map(id => id.toNumber());
+        assert.include(tokenIds, tokenId.toNumber());
+      });
+    });
+
+    it('rejects when no address given', async function() {
+      await this.contract.tokensOf.call('0x0000000000000000000000000000000000000000').should.be.rejectedWith('revert');
+    });
+  });
+
+  describe('tokenUriById', () => {
+    beforeEach(async function () {
+      this.toAddress = accounts[7];
+      this.beneficiaryId = 1;
+      this.tokenUri = 'QzZ8T3ZEr8UDgBpD9yXMcYASmgoZr9jytmozCNMdA3afWM';
+      this.msgValue = 100000;
+      this.transactionMsg = { from: this.toAddress, value: this.msgValue };
+    });
+
+    it('returns the token uri from ID', async function() {
+      const nonce = 21;
+      const { v, r, s } = await generateSignature(
+        this.toAddress, this.tokenUri, this.beneficiaryId, nonce, this.msgValue, this.minterAddress
+      );
+
+      await this.contract.mintTo(
+        this.toAddress, this.beneficiaryId, this.tokenUri, nonce, v, r, s, this.transactionMsg
+      ).then(async (result) => {
+        let tokenId = await this.contract.tokenOfOwnerByIndex(this.toAddress, 0);
+        let tokenUri = await this.contract.tokenUriById(tokenId);
+        assert.include(tokenUri, this.tokenUri);
+      });
+    });
+
+    it('rejects when no id given', async function() {
+      await this.contract.tokenUriById.call('0').should.be.rejectedWith('revert');
+    });
+  });
 });
