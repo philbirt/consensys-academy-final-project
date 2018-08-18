@@ -166,11 +166,6 @@ class Index extends Component {
     });
   }
 
-  scroll(e) {
-    console.log(e.deltaY);
-    window.scrollBy(e.deltaY, 0);
-  }
-
   renderSubheader() {
     const { account } = this.web3Store;
     const { collectibleData } = this.userStore;
@@ -187,7 +182,7 @@ class Index extends Component {
               <HelloItems>Why don't you try minting a mint above?</HelloItems>
             }
             { collectibleData.length > 0 &&
-              <Collectibles onWheel={this.scroll}>{this.renderCollectibles()}</Collectibles>
+              <Collectibles>{this.renderCollectibles()}</Collectibles>
             }
           </SubheaderDescription>
         </Subheader>
