@@ -11,7 +11,7 @@ import CheckmarkCircleIcon from '../svg/checkmark-circle-icon';
 import CheckmarkBlueIcon from '../svg/checkmark-blue-icon';
 import LoaderDots from '../svg/loader-dots';
 
-import { mintApi, getIpfsImage } from '../api';
+import { mintApi, getIpfsData } from '../api';
 
 const Wrapper = styled.div`
   position: relative;
@@ -188,9 +188,8 @@ class Benefit extends Component {
   }
 
   async fetchImage() {
-    getIpfsImage(this.props.image).then((response) => {
-      this.setState({loadedImage: response.data });
-    });
+    const imageData = await getIpfsData(this.props.image);
+    this.setState({loadedImage: imageData });
   }
 
   render() {

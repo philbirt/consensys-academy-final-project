@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import styled, { css } from 'react-emotion';
 
-import { getIpfsImage } from '../api';
+import { getIpfsData } from '../api';
 
 const Wrapper = styled.div`
   display: flex;
@@ -47,9 +47,8 @@ class Collectible extends Component {
   }
 
   async fetchImage() {
-    getIpfsImage(this.props.beneficiary.image).then((response) => {
-      this.setState({loadedImage: response.data });
-    });
+    const imageData = await getIpfsData(this.props.beneficiary.image);
+    this.setState({loadedImage: imageData });
   }
 
   render() {

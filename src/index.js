@@ -6,7 +6,7 @@ import styled, { css } from 'react-emotion';
 import { observer, inject } from 'mobx-react';
 
 import getWeb3 from './web3';
-import { getBeneficiaries, ipfsUriToUrl, getIpfsImage } from './api';
+import { getBeneficiaries } from './api';
 
 import Benemint from './svg/benemint';
 import WaveIcon from './svg/wave-icon';

@@ -11,8 +11,6 @@ import CheckmarkCircleIcon from '../svg/checkmark-circle-icon';
 import CheckmarkBlueIcon from '../svg/checkmark-blue-icon';
 import LoaderDots from '../svg/loader-dots';
 
-import { getIpfsImage } from '../api';
-
 const Overlay = styled.div`
   background: #fff;
   height: 100%;
