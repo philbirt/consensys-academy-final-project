@@ -1,5 +1,5 @@
 import { observable, action, computed } from 'mobx';
-import { ipfsUriToUrl, getIpfsImage } from '../api';
+import { getIpfsData } from '../api';
 
 export default class UserStore {
   @observable collectibleData = []
@@ -17,12 +17,14 @@ export default class UserStore {
   updateCollectibleData = () => {
     this.web3Store.contract.methods.tokensOf(this.web3Store.account).call().then((response) => {
       response.map((tokenId, index) => {
-        this.web3Store.contract.methods.tokenUriById(tokenId).call().then((response) => {
-          getIpfsImage(ipfsUriToUrl(response)).then((response) => {
+        this.web3Store.contract.methods.tokenUriById(tokenId).call().then((web3Response) => {
+          getIpfsData(web3Response).then((response) => {
+            const jsonResponse = JSON.parse(response);
+
             if (index === 0) {
-              this.collectibleData = [response.data];
+              this.collectibleData = [jsonResponse];
             } else {
-              this.collectibleData.push(response.data);
+              this.collectibleData.push(jsonResponse);
             }
           });
         });

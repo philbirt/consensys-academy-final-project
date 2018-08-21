@@ -1,4 +1,5 @@
 import axios from 'axios';
+import IPFS from 'ipfs-api';
 
 export function post(requestUrl, data) {
   return new Promise((resolve, reject) => {
@@ -23,6 +24,7 @@ export function get(requestUrl, data) {
     ).then(function (response) {
       resolve(response);
     }).catch(function (error) {
+      console.log('error', error);
       //handle error
       reject(error);
     });
@@ -33,12 +35,10 @@ export function getBeneficiaries() {
   return get('http://localhost:8180/beneficiaries');
 }
 
-export function ipfsUriToUrl(ipfsUri) {
-  return `https://ipfs.io/ipfs/${ipfsUri}`
-}
-
-export function getIpfsImage(ipfsUrl) {
-  return get(ipfsUrl);
+export async function getIpfsData(ipfsUri) {
+  const ipfs = new IPFS({ host: 'ipfs.infura.io', port: 5001, protocol: 'https' });
+  let ipfsObj = await ipfs.get(ipfsUri);
+  return ipfsObj[0].content.toString('utf8');
 }
 
 export function mintApi(toAddress, beneficiaryId, name, price) {
