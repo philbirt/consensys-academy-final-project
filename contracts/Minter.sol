@@ -25,8 +25,9 @@ import "zeppelin-solidity/contracts/math/SafeMath.sol";
 * https://programtheblockchain.com/posts/2018/02/17/signing-and-verifying-messages-in-ethereum/
 *
 * In addition, this contract allows for adding, deactivating, and re-activating of
-* beneficiary addresses. The owner can also change the minter address. All of the public
-* methods are pausable, and only-owner operated where it makes sense to do so.
+* beneficiary addresses. The owner can also change the minter address. Any user can query
+* for token IDs for a particular address, and token URIs for a particular token ID.
+* All of the public-non-view methods are pausable, and only-owner operated where it makes sense to do so.
 *
 */
 contract Minter is ERC721Token, Ownable, Pausable {

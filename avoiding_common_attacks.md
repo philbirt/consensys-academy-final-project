@@ -1,14 +1,12 @@
 There are several ways I went about avoiding common attacks.
 
-One way, which I discussed in the design pattern decisions doc, was by employing fully-audited code for the most part, and making all but one function only callable by the owner of the contract.
+One way, which I discussed in the design pattern decisions doc, was by employing fully-audited code for the most part, and making all but one function only callable by the owner of the contract. This audited code comes from Zeppelin's SafeMath, Pausable, Ownable, and ERC721Token contracts.
 
-Another way I avoided common attacks is by writing a unit spec for every conceivable variation on inputs to each function.
+I added require statements at the top of each function to validate the input, and checked that these preconditions are met in each unit spec. I limited the accessibility of the functions by making things private when no external caller needs to use it, made each public function pausable, and made all owner-specific transactions only callable by the owner. I used SafeMath from zeppelin when dealing with addition of two uints. I wrote unit specs to make sure each of these variations in input and data state were acting the way I expected.
 
-I added require statements at the top of each function to validate the input, and checked that these preconditions are met in each unit spec. I limited the accessibility of the functions by making things private when no external caller needs to use it, made each public function pausable, and made all owner-specific transactions only callable by the owner. I used SafeMath from zeppelin when dealing with addition of two uints.
+I also created a distinction between the address that signs valid token URIs for minting ERC721 tokens (minterAddress), and the address that owns the contract. Since the private key of the minter will have to live on a central server, it made sense to separate the concerns of having that key possibly getting compromised and losing control of the full contract. I created an owner-only function to update this minterAddress should the need arise.
 
-I also created a distinction between the address that signs valid token URIs for minting ERC721 tokens (minterAddress), and the address that owns the contract. Since the private key of the minter will have to live on a server, it made sense to separate the concerns of having that key possibly getting compromised and losing control of the full contract. I created an owner-only function to update this minterAddress should the need arise.
-
-There is also a way I went about avoiding having arbitrary unvalidated user input in the mintTo function, by leveraging ECDSA signatures:
+There is also a way I went about avoiding having arbitrary unvalidated user input in the mintTo function, by leveraging ECDSA signatures, generated on the central server with a private key we own:
 
 Token URIs (in the form of an IPFS URI) must be signed by the minterAddress to verify that the URI came from the dApp, and not any other arbitrary user-generated URI.
 
