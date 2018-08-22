@@ -1,3 +1,14 @@
+/* Tests and their purpose
+*
+* In general, I wrote specs for each public method, testing that all of their pre-condition
+* checks would fail in the right circumstances (zero-address, non-owner, paused, no msg.value, etc)
+* as well as a few "happy-path" test cases where all of the input is valid.
+* 
+* Hopefully the description of each test, along with the setup-context, and assertions will
+* be adequate enough as further explanation of why I wrote the tests that I did.
+* 
+*/
+
 const Web3 = require('web3');
 const Web3Utils = require('web3-utils');
 
